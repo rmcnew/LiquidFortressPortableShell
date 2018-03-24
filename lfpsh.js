@@ -30,9 +30,17 @@ var lfpsh = {};
 // Import Java classes
 lfpsh.System = Java.type('java.lang.System');
 lfpsh.File = Java.type('java.io.File');
+lfpsh.ScriptEngineManager = Java.type('javax.script.ScriptEngineManager');
+lfpsh.ScriptEngine = new lfpsh.ScriptEngineManager().getEngineByName('nashorn');
+lfpsh.ScriptContext = lfpsh.ScriptEngine.getContext();
+//lfpsh.GlobalBindings = lfpsh.ScriptContext.getBindings(lfpsh.ScriptContext.GLOBAL_SCOPE);
+//lfpsh.LocalBindings = lfpsh.ScriptContext.getBindings(lfpsh.ScriptContext.ENGINE_SCOPE);
 
 // global variables
-lfpsh.currentDirectory = lfsh.System.getProperty('user.dir');
+lfpsh.currentDirectory = lfpsh.System.getProperty('user.dir');
+lfpsh.homeDirectory = lfpsh.System.getProperty('user.home');
+lfpsh.userName = lfpsh.System.getProperty('user.name');
+lfpsh.fs = lfpsh.System.getProperty('file.separator');
 
 function env(arg) {
     if (arg === undefined) {
@@ -52,12 +60,30 @@ function pwd() {
 function ls(arg) {
     var dir;
     if (arg === undefined) {
-        dir = new lfpsh.File(lfsh.currentDirectory);
+        dir = new lfpsh.File(lfpsh.currentDirectory);
     } else if (typeof arg === "string") {
         dir = new lfpsh.File(arg);
     }
     var list = dir.list();
     for each (var item in list) {
         print(item);
+    }
+}
+
+function cd(arg) {
+    if (arg === undefined) {
+        lfpsh.currentDirectory = lfpsh.homeDirectory;
+    } else if (typeof arg === "string") {
+        var path = new lfpsh.File(arg);
+        if (path.isDirectory()) {
+            lfpsh.currentDirectory = path.getAbsolutePath();
+        } else {
+            path = new lfpsh.File(lfpsh.currentDirectory + lfpsh.fs + arg);
+            if (path.isDirectory()) {
+                lfpsh.currentDirectory = path.getAbsolutePath();
+            } else {
+                print("${arg} is not a directory!");
+            }
+        }
     }
 }
