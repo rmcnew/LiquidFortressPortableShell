@@ -1,5 +1,5 @@
-# LiquidFortressPortableShell
-Experimental, portable command-line shell that uses Java 8+ Nashorn for implementation
+# Liquid Fortress Portable Shell
+Experimental, portable command-line shell that uses Java 8+ Nashorn for implementation.
 
 Copyright (c) 2018.  Richard Scott McNew.
 
