@@ -24,7 +24,9 @@
 // as a portable shell for environments that have JRE 8+ but lack other scripting
 // capabilities.
 
-// To use:  invoke Nashorn via "jjs -scripting" then "load('/path/to/lfsh.js')"
+// To use, invoke via Nashorn with:  'jjs -scripting -fx /path/to/lfpsh.js'
+
+// Originally, I wanted to support both CLI and GUI modes.  However, after some research I could not find a way to configure the more complex keyboard chord handling on the CLI mode.  I want to support the typical Unix-like shell keyboard shortcuts: Ctrl-C to halt a running command, Ctrl-Z to suspend a command, etc.  Not having these options for a CLI mode means that I will just support a GUI mode.   
 
 var lfpsh = {};
 // Import Java classes
@@ -35,13 +37,33 @@ lfpsh.ScriptEngine = new lfpsh.ScriptEngineManager().getEngineByName('nashorn');
 lfpsh.ScriptContext = lfpsh.ScriptEngine.getContext();
 //lfpsh.GlobalBindings = lfpsh.ScriptContext.getBindings(lfpsh.ScriptContext.GLOBAL_SCOPE);
 //lfpsh.LocalBindings = lfpsh.ScriptContext.getBindings(lfpsh.ScriptContext.ENGINE_SCOPE);
+lfpsh.Scene = Java.type('javafx.scene.Scene');
+lfpsh.StackPane = Java.type('javafx.scene.layout.StackPane');
+lfpsh.TextArea = Java.type('javafx.scene.control.TextArea');
+lfpsh.KeyCombination = Java.type('javafx.scene.input.KeyCombination');
+lfpsh.KeyCodeCombination = Java.type('javafx.scene.input.KeyCodeCombination');
+lfpsh.KeyCode = Java.type('javafx.scene.input.KeyCode');
+lfpsh.KeyEvent = Java.type('javafx.scene.input.KeyEvent');
 
 // global variables
 lfpsh.currentDirectory = lfpsh.System.getProperty('user.dir');
 lfpsh.homeDirectory = lfpsh.System.getProperty('user.home');
 lfpsh.userName = lfpsh.System.getProperty('user.name');
 lfpsh.fs = lfpsh.System.getProperty('file.separator');
+lfpsh.windowDefaultWidth = 450;
+lfpsh.windowDefaultHeight = 400;
+lfpsh.ctrl_C = new lfpsh.KeyCodeCombination(lfpsh.KeyCode.C, lfpsh.KeyCombination.CONTROL_DOWN);
+lfpsh.ctrl_Z = new lfpsh.KeyCodeCombination(lfpsh.KeyCode.Z, lfpsh.KeyCombination.CONTROL_DOWN);
 
+// build GUI
+lfpsh.sceneRoot = new lfpsh.StackPane();
+lfpsh.mainTextArea = new lfpsh.TextArea("PROMPT");
+lfpsh.sceneRoot.getChildren().add(lfpsh.mainTextArea);
+$STAGE.title = "Liquid Fortress Portable Shell";
+$STAGE.scene = new lfpsh.Scene(lfpsh.sceneRoot, lfpsh.windowDefaultWidth, lfpsh.windowDefaultHeight);
+$STAGE.show();
+
+// command implementations
 function env(arg) {
     if (arg === undefined) {
         var envMap = lfpsh.System.getenv();
