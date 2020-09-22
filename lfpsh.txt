@@ -1,6 +1,6 @@
 // Liquid Fortress Portable Shell
 //
-// Copyright (c) 2018.  Richard Scott McNew.
+// Copyright (c) 2020.  Richard Scott McNew.
 //
 // This file is part of Liquid Fortress Portable Shell.
 //
@@ -24,9 +24,7 @@
 // as a portable shell for environments that have JRE 8+ but lack other scripting
 // capabilities.
 
-// To use, invoke via Nashorn with:  'jjs -scripting -fx /path/to/lfpsh.js'
-
-// Originally, I wanted to support both CLI and GUI modes.  However, after some research I could not find a way to configure the more complex keyboard chord handling on the CLI mode.  I want to support the typical Unix-like shell keyboard shortcuts: Ctrl-C to halt a running command, Ctrl-Z to suspend a command, etc.  Not having these options for a CLI mode means that I will just support a GUI mode.   
+// To use, invoke via Nashorn with:  'jjs -scripting -fx /path/to/lfpsh.txt'
 
 var lfpsh = {};
 // Import Java classes
@@ -37,6 +35,7 @@ lfpsh.ScriptEngine = new lfpsh.ScriptEngineManager().getEngineByName('nashorn');
 lfpsh.ScriptContext = lfpsh.ScriptEngine.getContext();
 //lfpsh.GlobalBindings = lfpsh.ScriptContext.getBindings(lfpsh.ScriptContext.GLOBAL_SCOPE);
 //lfpsh.LocalBindings = lfpsh.ScriptContext.getBindings(lfpsh.ScriptContext.ENGINE_SCOPE);
+
 lfpsh.Scene = Java.type('javafx.scene.Scene');
 lfpsh.StackPane = Java.type('javafx.scene.layout.StackPane');
 lfpsh.TextArea = Java.type('javafx.scene.control.TextArea');
@@ -52,6 +51,7 @@ lfpsh.userName = lfpsh.System.getProperty('user.name');
 lfpsh.fs = lfpsh.System.getProperty('file.separator');
 lfpsh.windowDefaultWidth = 450;
 lfpsh.windowDefaultHeight = 400;
+
 lfpsh.ctrl_C = new lfpsh.KeyCodeCombination(lfpsh.KeyCode.C, lfpsh.KeyCombination.CONTROL_DOWN);
 lfpsh.ctrl_Z = new lfpsh.KeyCodeCombination(lfpsh.KeyCode.Z, lfpsh.KeyCombination.CONTROL_DOWN);
 
